@@ -100,6 +100,12 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+                        // Available donation slots - PUBLIC
+                   .requestMatchers(
+                   HttpMethod.GET,
+                "/api/donation-requests/available-slots"
+                  )
+                        .permitAll()
 
                         // Login & Register
                         .requestMatchers("/api/auth/**")
@@ -141,6 +147,15 @@ public class SecurityConfig {
                                 "/api/donors/**"
                         )
                         .hasAuthority("ROLE_ADMIN")
+                        // =========================
+// DONATION REQUEST
+// =========================
+
+.requestMatchers(
+        HttpMethod.POST,
+        "/api/donation-requests"
+)
+.authenticated()
 
                         // =========================
                         // USER + ADMIN

@@ -12,6 +12,9 @@ function Dashboard() {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
+  const [donationRequests, setDonationRequests] = useState([]);
+  const [requestLoading, setRequestLoading] = useState(false);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
@@ -44,6 +47,52 @@ function Dashboard() {
 
     fetchDonors();
   }, [token]);
+
+  const fetchDonationRequests = async () => {
+    if (!token || role !== "ADMIN") return;
+
+    try {
+      setRequestLoading(true);
+
+      const response = await axios.get(
+        "http://localhost:8080/api/donation-requests",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setDonationRequests(response.data);
+    } catch (err) {
+      console.error("Donation request error:", err);
+    } finally {
+      setRequestLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDonationRequests();
+  }, [token, role]);
+
+  const updateDonationStatus = async (id, status) => {
+    try {
+      await axios.put(
+        `http://localhost:8080/api/donation-requests/${id}/status?status=${status}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      fetchDonationRequests();
+    } catch (err) {
+      console.error("Status update error:", err);
+      alert("Unable to update donation request.");
+    }
+  };
 
   const totalDonors = donors.length;
 
@@ -677,6 +726,109 @@ function Dashboard() {
 
             </div>
 
+
+            {/* DONATION REQUESTS */}
+
+            {role === "ADMIN" && (
+              <div className="recent-card mb-5">
+
+                <div className="recent-header">
+                  <h2 className="fw-bold mb-1">
+                    🩸 Donation Requests
+                  </h2>
+                  <p className="text-muted mb-0">
+                    Manage blood donation requests
+                  </p>
+                </div>
+
+                {requestLoading ? (
+                  <div className="text-center p-5">
+                    <div className="spinner-border text-danger"></div>
+                    <p className="mt-3">Loading donation requests...</p>
+                  </div>
+                ) : donationRequests.length === 0 ? (
+                  <div className="text-center p-5">
+                    <div style={{ fontSize: "45px" }}>🩸</div>
+                    <h5 className="fw-bold mt-3">No Donation Requests</h5>
+                    <p className="text-muted mb-0">
+                      No donation requests have been submitted yet.
+                    </p>
+                  </div>
+                ) : (
+                  donationRequests.map((request) => (
+                    <div className="recent-donor" key={request.id}>
+                      <div className="row align-items-center">
+
+                        <div className="col-md-3">
+                          <div className="recent-name">
+                            {request.fullName}
+                          </div>
+                          <div className="recent-city">
+                            📍 {request.city}
+                          </div>
+                        </div>
+
+                        <div className="col-md-2 mt-3 mt-md-0">
+                          <span className="recent-blood">
+                            {request.bloodGroup}
+                          </span>
+                        </div>
+
+                        <div className="col-md-2 mt-3 mt-md-0">
+                          <strong>🎟️ {request.tokenNumber}</strong>
+                        </div>
+
+                        <div className="col-md-3 mt-3 mt-md-0">
+                          <div>📅 {request.donationDate}</div>
+                          <small className="text-muted">
+                            🕐 {request.donationSlot}
+                          </small>
+                        </div>
+
+                        <div className="col-md-2 mt-3 mt-md-0">
+                          <div className="mb-2">
+                            <span
+                              className={
+                                request.status === "APPROVED"
+                                  ? "badge bg-success"
+                                  : request.status === "REJECTED"
+                                  ? "badge bg-danger"
+                                  : "badge bg-warning text-dark"
+                              }
+                            >
+                              {request.status}
+                            </span>
+                          </div>
+
+                          {request.status === "PENDING" && (
+                            <div className="d-flex gap-2">
+                              <button
+                                className="btn btn-sm btn-success"
+                                onClick={() =>
+                                  updateDonationStatus(request.id, "APPROVED")
+                                }
+                              >
+                                Approve
+                              </button>
+
+                              <button
+                                className="btn btn-sm btn-danger"
+                                onClick={() =>
+                                  updateDonationStatus(request.id, "REJECTED")
+                                }
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
 
             {/* QUICK ACTIONS */}
 

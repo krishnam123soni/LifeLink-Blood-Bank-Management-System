@@ -10,9 +10,10 @@ import DonorList from "./pages/DonorList";
 import AddDonor from "./pages/AddDonor";
 import EditDonor from "./pages/EditDonor";
 import DonorDetails from "./pages/DonorDetails";
-
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import DonationRequest from "./pages/DonationRequest";
+import About from "./pages/About";
+import Help from "./pages/Help";
 
 // ===============================
 // ADMIN PROTECTED ROUTE
@@ -65,6 +66,21 @@ function App() {
           element={<Register />}
         />
 
+        {/* ================= ABOUT ================= */}
+
+         <Route
+            path="/about"
+            element={<About />}
+        />
+
+
+         {/* ================= HELP ================= */}
+
+          <Route
+             path="/help"
+             element={<Help />}
+        />
+
 
         {/* ================= DASHBOARD ================= */}
         <Route
@@ -108,7 +124,14 @@ function App() {
             </AdminRoute>
           }
         />
-
+        <Route
+           path="/donation-requests"
+               element={
+                <ProtectedRoute>
+                  <DonationRequest />
+                </ProtectedRoute>
+                 }
+                />
 
         {/* ================= EDIT DONOR ================= */}
         <Route

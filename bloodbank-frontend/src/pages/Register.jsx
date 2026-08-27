@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import "./Register.css";
 
 function Register() {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ function Register() {
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -26,6 +29,7 @@ function Register() {
 
     setMessage("");
     setError("");
+    setLoading(true);
 
     try {
       await axios.post(
@@ -33,7 +37,9 @@ function Register() {
         formData
       );
 
-      setMessage("Registration successful! Redirecting to login...");
+      setMessage(
+        "Registration successful! Redirecting to login..."
+      );
 
       setTimeout(() => {
         navigate("/login");
@@ -46,131 +52,218 @@ function Register() {
         error.response?.data?.message ||
         "Registration failed. Please try again."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="container py-5">
+    <div className="register-page">
 
-      <div className="row justify-content-center">
+      {/* LEFT SIDE */}
+      <div className="register-info">
 
-        <div className="col-md-5">
+        <div className="register-brand">
+          <span>🩸</span>
+          <span>LifeLink</span>
+        </div>
 
-          <div className="card shadow border-0">
+        <div className="register-info-content">
 
-            <div className="card-body p-4">
+          <p className="register-small-heading">
+            JOIN THE LIFELINK COMMUNITY
+          </p>
 
-              <div className="text-center mb-4">
+          <h1>
+            Become A
+            <br />
+            <span>Life Saver.</span>
+          </h1>
 
-                <div style={{ fontSize: "50px" }}>
-                  🩸
-                </div>
+          <p className="register-info-text">
+            Create your LifeLink account and become part
+            of a community helping people find blood when
+            they need it most.
+          </p>
 
-                <h2 className="fw-bold">
-                  Create Account
-                </h2>
+          <div className="register-benefits">
 
-                <p className="text-muted">
-                  Join LifeLink Blood Bank
-                </p>
-
+            <div className="register-benefit">
+              <span>🩸</span>
+              <div>
+                <strong>Donate Blood</strong>
+                <p>Help someone in need.</p>
               </div>
+            </div>
 
-              <form onSubmit={handleSubmit}>
+            <div className="register-benefit">
+              <span>🔎</span>
+              <div>
+                <strong>Find Blood</strong>
+                <p>Search available donors.</p>
+              </div>
+            </div>
 
-                {/* Full Name */}
-                <div className="mb-3">
+            <div className="register-benefit">
+              <span>❤️</span>
+              <div>
+                <strong>Save Lives</strong>
+                <p>Every donation matters.</p>
+              </div>
+            </div>
 
-                  <label className="form-label">
-                    Full Name
-                  </label>
+          </div>
 
-                  <input
-                    type="text"
-                    name="fullName"
-                    className="form-control"
-                    placeholder="Enter your full name"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    required
-                  />
+        </div>
 
-                </div>
+        <p className="register-copyright">
+          © 2026 LifeLink. All rights reserved.
+        </p>
 
-                {/* Email */}
-                <div className="mb-3">
+      </div>
 
-                  <label className="form-label">
-                    Email
-                  </label>
 
-                  <input
-                    type="email"
-                    name="email"
-                    className="form-control"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
+      {/* RIGHT SIDE */}
+      <div className="register-form-section">
 
-                </div>
+        <div className="register-card">
 
-                {/* Password */}
-                <div className="mb-3">
+          <div className="register-header">
 
-                  <label className="form-label">
-                    Password
-                  </label>
+            <div className="register-blood-icon">
+              🩸
+            </div>
 
-                  <input
-                    type="password"
-                    name="password"
-                    className="form-control"
-                    placeholder="Create a password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                  />
+            <h2>Create Account</h2>
 
-                </div>
+            <p>
+              Join the LifeLink Blood Bank community
+            </p>
 
-                <button
-                  type="submit"
-                  className="btn btn-danger w-100"
-                >
-                  Create Account
-                </button>
+          </div>
 
-              </form>
 
-              {/* Success */}
-              {message && (
-                <div className="alert alert-success mt-3">
-                  {message}
-                </div>
-              )}
+          <form onSubmit={handleSubmit}>
 
-              {/* Error */}
-              {error && (
-                <div className="alert alert-danger mt-3">
-                  {error}
-                </div>
-              )}
+            {/* FULL NAME */}
+            <div className="register-input-group">
 
-              <div className="text-center mt-3">
+              <label>Full Name</label>
 
-                <p className="mb-0">
-                  Already have an account?
-                </p>
+              <div className="register-input-wrapper">
 
-                <Link to="/login">
-                  Login here
-                </Link>
+                <span>👤</span>
+
+                <input
+                  type="text"
+                  name="fullName"
+                  placeholder="Enter your full name"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  required
+                />
 
               </div>
 
             </div>
+
+
+            {/* EMAIL */}
+            <div className="register-input-group">
+
+              <label>Email Address</label>
+
+              <div className="register-input-wrapper">
+
+                <span>✉️</span>
+
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+
+              </div>
+
+            </div>
+
+
+            {/* PASSWORD */}
+            <div className="register-input-group">
+
+              <label>Password</label>
+
+              <div className="register-input-wrapper">
+
+                <span>🔒</span>
+
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Create a password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+
+                <button
+                  type="button"
+                  className="register-password-toggle"
+                  onClick={() =>
+                    setShowPassword(!showPassword)
+                  }
+                >
+                  {showPassword ? "🙈" : "👁️"}
+                </button>
+
+              </div>
+
+            </div>
+
+
+            {/* BUTTON */}
+            <button
+              type="submit"
+              className="register-button"
+              disabled={loading}
+            >
+              {loading
+                ? "Creating Account..."
+                : "Create LifeLink Account →"}
+            </button>
+
+          </form>
+
+
+          {/* SUCCESS MESSAGE */}
+          {message && (
+            <div className="register-success">
+              {message}
+            </div>
+          )}
+
+
+          {/* ERROR MESSAGE */}
+          {error && (
+            <div className="register-error">
+              {error}
+            </div>
+          )}
+
+
+          {/* LOGIN LINK */}
+          <div className="login-link-section">
+
+            <p>
+              Already have an account?
+            </p>
+
+            <Link to="/login">
+              Login to your account
+            </Link>
 
           </div>
 
