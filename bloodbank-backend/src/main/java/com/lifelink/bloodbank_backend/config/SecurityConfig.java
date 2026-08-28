@@ -100,18 +100,31 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        // Available donation slots - PUBLIC
-                   .requestMatchers(
-                   HttpMethod.GET,
-                "/api/donation-requests/available-slots"
-                  )
+
+                        // =========================
+                        // ROOT ENDPOINT - PUBLIC
+                        // =========================
+                        .requestMatchers("/")
                         .permitAll()
 
-                        // Login & Register
+                        // =========================
+                        // AVAILABLE DONATION SLOTS - PUBLIC
+                        // =========================
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/donation-requests/available-slots"
+                        )
+                        .permitAll()
+
+                        // =========================
+                        // LOGIN & REGISTER - PUBLIC
+                        // =========================
                         .requestMatchers("/api/auth/**")
                         .permitAll()
 
-                        // Swagger
+                        // =========================
+                        // SWAGGER - PUBLIC
+                        // =========================
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
@@ -119,7 +132,9 @@ public class SecurityConfig {
                         )
                         .permitAll()
 
-                        // CORS preflight
+                        // =========================
+                        // CORS PREFLIGHT - PUBLIC
+                        // =========================
                         .requestMatchers(
                                 HttpMethod.OPTIONS,
                                 "/**"
@@ -129,7 +144,6 @@ public class SecurityConfig {
                         // =========================
                         // ADMIN ONLY
                         // =========================
-
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/donors"
@@ -147,31 +161,35 @@ public class SecurityConfig {
                                 "/api/donors/**"
                         )
                         .hasAuthority("ROLE_ADMIN")
-                        // =========================
-// DONATION REQUEST
-// =========================
 
-.requestMatchers(
-        HttpMethod.POST,
-        "/api/donation-requests"
-)
-.authenticated()
+                        // =========================
+                        // DONATION REQUEST
+                        // =========================
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/donation-requests"
+                        )
+                        .authenticated()
 
                         // =========================
                         // USER + ADMIN
                         // =========================
-
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/donors/**"
                         )
                         .authenticated()
 
+                        // =========================
+                        // ALL OTHER REQUESTS
+                        // =========================
                         .anyRequest()
                         .authenticated()
                 );
 
+        // =========================
         // JWT FILTER
+        // =========================
         http.addFilterBefore(
                 jwtAuthenticationFilter,
                 UsernamePasswordAuthenticationFilter.class
