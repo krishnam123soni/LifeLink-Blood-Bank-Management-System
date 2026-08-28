@@ -33,13 +33,17 @@ public class SecurityConfig {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
+    // =========================
     // PASSWORD ENCODER
+    // =========================
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // =========================
     // AUTHENTICATION MANAGER
+    // =========================
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration) throws Exception {
@@ -47,14 +51,19 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
+    // =========================
     // CORS CONFIGURATION
+    // =========================
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(
-                List.of("http://localhost:5173")
+                List.of(
+                        "http://localhost:5173",
+                        "https://lifelink-backend-qb67.onrender.com"
+                )
         );
 
         configuration.setAllowedMethods(
@@ -81,7 +90,9 @@ public class SecurityConfig {
         return source;
     }
 
+    // =========================
     // SECURITY FILTER CHAIN
+    // =========================
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http) throws Exception {
@@ -102,13 +113,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         // =========================
-                        // ROOT ENDPOINT - PUBLIC
-                        // =========================
-                        .requestMatchers("/")
-                        .permitAll()
-
-                        // =========================
-                        // AVAILABLE DONATION SLOTS - PUBLIC
+                        // PUBLIC DONATION SLOTS
                         // =========================
                         .requestMatchers(
                                 HttpMethod.GET,
@@ -117,13 +122,15 @@ public class SecurityConfig {
                         .permitAll()
 
                         // =========================
-                        // LOGIN & REGISTER - PUBLIC
+                        // LOGIN & REGISTER
                         // =========================
-                        .requestMatchers("/api/auth/**")
+                        .requestMatchers(
+                                "/api/auth/**"
+                        )
                         .permitAll()
 
                         // =========================
-                        // SWAGGER - PUBLIC
+                        // SWAGGER
                         // =========================
                         .requestMatchers(
                                 "/v3/api-docs/**",
@@ -133,7 +140,7 @@ public class SecurityConfig {
                         .permitAll()
 
                         // =========================
-                        // CORS PREFLIGHT - PUBLIC
+                        // CORS PREFLIGHT
                         // =========================
                         .requestMatchers(
                                 HttpMethod.OPTIONS,
@@ -181,7 +188,7 @@ public class SecurityConfig {
                         .authenticated()
 
                         // =========================
-                        // ALL OTHER REQUESTS
+                        // EVERYTHING ELSE
                         // =========================
                         .anyRequest()
                         .authenticated()
