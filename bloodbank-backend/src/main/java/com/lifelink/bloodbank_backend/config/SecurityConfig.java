@@ -36,6 +36,7 @@ public class SecurityConfig {
     // =========================
     // PASSWORD ENCODER
     // =========================
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -44,6 +45,7 @@ public class SecurityConfig {
     // =========================
     // AUTHENTICATION MANAGER
     // =========================
+
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration) throws Exception {
@@ -54,6 +56,7 @@ public class SecurityConfig {
     // =========================
     // CORS CONFIGURATION
     // =========================
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
@@ -62,6 +65,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(
                 List.of(
                         "http://localhost:5173",
+                        "http://localhost:3000",
                         "https://lifelink-backend-qb67.onrender.com"
                 )
         );
@@ -93,45 +97,50 @@ public class SecurityConfig {
     // =========================
     // SECURITY FILTER CHAIN
     // =========================
+
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http) throws Exception {
 
         http
+                // Disable CSRF because we are using JWT
                 .csrf(csrf -> csrf.disable())
 
+                // Enable CORS
                 .cors(cors -> cors.configurationSource(
                         corsConfigurationSource()
                 ))
 
+                // JWT based authentication
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS
                         )
                 )
 
+                // =========================
+                // AUTHORIZATION
+                // =========================
+
                 .authorizeHttpRequests(auth -> auth
 
                         // =========================
-                        // PUBLIC DONATION SLOTS
+                        // PUBLIC APIs
                         // =========================
+
+                        .requestMatchers(
+                                "/api/auth/**"
+                        )
+                        .permitAll()
+
+                        // Available donation slots
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/donation-requests/available-slots"
                         )
                         .permitAll()
 
-                        // =========================
-                        // LOGIN & REGISTER
-                        // =========================
-                        .requestMatchers(
-                                "/api/auth/**"
-                        )
-                        .permitAll()
-
-                        // =========================
-                        // SWAGGER
-                        // =========================
+                        // Swagger
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
@@ -139,9 +148,7 @@ public class SecurityConfig {
                         )
                         .permitAll()
 
-                        // =========================
-                        // CORS PREFLIGHT
-                        // =========================
+                        // CORS preflight
                         .requestMatchers(
                                 HttpMethod.OPTIONS,
                                 "/**"
@@ -151,6 +158,7 @@ public class SecurityConfig {
                         // =========================
                         // ADMIN ONLY
                         // =========================
+
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/donors"
@@ -169,27 +177,39 @@ public class SecurityConfig {
                         )
                         .hasAuthority("ROLE_ADMIN")
 
+                        // Donation request status
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/donation-requests/*/status"
+                        )
+                        .hasAuthority("ROLE_ADMIN")
+
                         // =========================
-                        // DONATION REQUEST
+                        // AUTHENTICATED USERS
                         // =========================
+
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/donation-requests"
                         )
                         .authenticated()
 
-                        // =========================
-                        // USER + ADMIN
-                        // =========================
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/donors/**"
                         )
                         .authenticated()
 
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/donation-requests/**"
+                        )
+                        .authenticated()
+
                         // =========================
                         // EVERYTHING ELSE
                         // =========================
+
                         .anyRequest()
                         .authenticated()
                 );
@@ -197,6 +217,7 @@ public class SecurityConfig {
         // =========================
         // JWT FILTER
         // =========================
+
         http.addFilterBefore(
                 jwtAuthenticationFilter,
                 UsernamePasswordAuthenticationFilter.class
