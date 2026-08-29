@@ -64,27 +64,50 @@ public class AuthService {
 
     public LoginResponse login(LoginRequest request) {
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+    System.out.println("========== LOGIN START ==========");
+    System.out.println("LOGIN EMAIL: " + request.getEmail());
 
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() ->
-                        new RuntimeException("User not found")
-                );
+    User user = userRepository.findByEmail(request.getEmail())
+            .orElseThrow(() ->
+                    new RuntimeException("User not found")
+            );
 
-        String token =
-                jwtService.generateToken(request.getEmail());
+    System.out.println("USER FOUND: " + user.getEmail());
+    System.out.println("USER ROLE: " + user.getRole());
 
-        return new LoginResponse(
-                token,
-                "Login Successful",
-                user.getRole()
-        );
+    boolean passwordMatch =
+            passwordEncoder.matches(
+                    request.getPassword(),
+                    user.getPassword()
+            );
+
+    System.out.println("PASSWORD MATCH: " + passwordMatch);
+
+    if (!passwordMatch) {
+        throw new RuntimeException("PASSWORD DOES NOT MATCH");
     }
+
+    System.out.println("PASSWORD MATCHED");
+
+    authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                    request.getEmail(),
+                    request.getPassword()
+            )
+    );
+
+    System.out.println("AUTHENTICATION SUCCESS");
+
+    String token = jwtService.generateToken(request.getEmail());
+
+    System.out.println("JWT GENERATED");
+
+    return new LoginResponse(
+            token,
+            "Login Successful",
+            user.getRole()
+    );
+}
 
     // =========================
     // TEMPORARY KRISHNAM PASSWORD RESET
