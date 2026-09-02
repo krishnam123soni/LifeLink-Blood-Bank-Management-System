@@ -28,7 +28,7 @@ function Dashboard() {
         setError("");
 
         const response = await axios.get(
-          "http://localhost:8080/api/donors",
+          "https://lifelink-backend-qb67.onrender.com/api/donors",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -55,7 +55,7 @@ function Dashboard() {
       setRequestLoading(true);
 
       const response = await axios.get(
-        "http://localhost:8080/api/donation-requests",
+        "https://lifelink-backend-qb67.onrender.com/api/donation-requests",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -78,7 +78,7 @@ function Dashboard() {
   const updateDonationStatus = async (id, status) => {
     try {
       await axios.put(
-        `http://localhost:8080/api/donation-requests/${id}/status?status=${status}`,
+        `https://lifelink-backend-qb67.onrender.com/api/donation-requests/${id}/status?status=${status}`,
         {},
         {
           headers: {

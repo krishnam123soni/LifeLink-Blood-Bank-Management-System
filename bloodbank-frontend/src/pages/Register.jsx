@@ -33,7 +33,7 @@ function Register() {
 
     try {
       await axios.post(
-        "http://localhost:8080/api/auth/register",
+        "https://lifelink-backend-qb67.onrender.com/api/auth/register",
         formData
       );
 

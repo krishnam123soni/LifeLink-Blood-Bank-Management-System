@@ -15,7 +15,7 @@ function DonorDetails() {
     const fetchDonor = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/donors/${id}`,
+          `https://lifelink-backend-qb67.onrender.com/api/donors/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

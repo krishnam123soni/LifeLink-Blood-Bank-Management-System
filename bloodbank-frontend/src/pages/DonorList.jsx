@@ -40,7 +40,7 @@ function DonorList() {
       setMessage("");
 
       const response = await axios.get(
-        "http://localhost:8080/api/donors",
+        "https://lifelink-backend-qb67.onrender.com/api/donors",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -72,7 +72,7 @@ function DonorList() {
 
     try {
       await axios.delete(
-        `http://localhost:8080/api/donors/${id}`,
+        `https://lifelink-backend-qb67.onrender.com/api/donors/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

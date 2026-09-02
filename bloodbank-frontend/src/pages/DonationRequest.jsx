@@ -72,7 +72,7 @@ const [loadingRequest, setLoadingRequest] = useState(true);
         setError("");
 
         const response = await axios.get(
-          `http://localhost:8080/api/donation-requests/available-slots?date=${formData.donationDate}`
+          `https://lifelink-backend-qb67.onrender.com/api/donation-requests/available-slots?date=${formData.donationDate}`
         );
 
         setAvailableSlots(response.data);
@@ -138,7 +138,7 @@ const [loadingRequest, setLoadingRequest] = useState(true);
 
       const response = await axios.post(
 
-        "http://localhost:8080/api/donation-requests",
+        "https://lifelink-backend-qb67.onrender.com/api/donation-requests",
 
         {
           ...formData,
