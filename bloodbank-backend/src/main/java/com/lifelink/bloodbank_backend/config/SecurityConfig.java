@@ -63,13 +63,13 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(
-        List.of(
-                "http://localhost:5173",
-                "http://localhost:3000",
-                "https://lifelink-backend-qb67.onrender.com",
-                "https://lifelink-blood-bank-management-system.onrender.com"
-        )
-);
+                List.of(
+                        "http://localhost:5173",
+                        "http://localhost:3000",
+                        "https://lifelink-backend-qb67.onrender.com",
+                        "https://lifelink-blood-bank-management-system.onrender.com"
+                )
+        );
 
         configuration.setAllowedMethods(
                 List.of(
@@ -160,28 +160,52 @@ public class SecurityConfig {
                         // ADMIN ONLY
                         // =========================
 
+                        // Add Donor
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/donors"
                         )
                         .hasAuthority("ROLE_ADMIN")
 
+                        // Update Donor
                         .requestMatchers(
                                 HttpMethod.PUT,
                                 "/api/donors/**"
                         )
                         .hasAuthority("ROLE_ADMIN")
 
+                        // Delete Donor
                         .requestMatchers(
                                 HttpMethod.DELETE,
                                 "/api/donors/**"
                         )
                         .hasAuthority("ROLE_ADMIN")
 
-                        // Donation request status
+                        // View ALL Donation Requests
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/donation-requests"
+                        )
+                        .hasAuthority("ROLE_ADMIN")
+
+                        // View specific Donation Request
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/donation-requests/*"
+                        )
+                        .hasAuthority("ROLE_ADMIN")
+
+                        // Approve / Reject Donation Request
                         .requestMatchers(
                                 HttpMethod.PUT,
                                 "/api/donation-requests/*/status"
+                        )
+                        .hasAuthority("ROLE_ADMIN")
+
+                        // Delete Donation Request
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/api/donation-requests/*"
                         )
                         .hasAuthority("ROLE_ADMIN")
 
@@ -189,21 +213,24 @@ public class SecurityConfig {
                         // AUTHENTICATED USERS
                         // =========================
 
+                        // Create Donation Request
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/donation-requests"
                         )
                         .authenticated()
 
+                        // USER can view own donation request
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/donors/**"
+                                "/api/donation-requests/my"
                         )
                         .authenticated()
 
+                        // View Donors
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/donation-requests/**"
+                                "/api/donors/**"
                         )
                         .authenticated()
 
